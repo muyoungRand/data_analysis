@@ -302,39 +302,3 @@ second_order_overlaps = second_order_modes_1ion(sb2, 0.4, xmin, xmax)
 
 plt.show() 
 # %%
-""" def plot_1ion_modes(mode, height, xmin, xmax, plot_counter):
-    '''
-    Function to plot sidebands for the 1-ion case. Removes all calculated sidebands that are not withing plot range, as well as those that has mode labels containing 'OP1' or 'OP2' (that only exists for the 3-ion case)
-    '''
-    color_list = ['red', 'blue', 'green']
-
-    modes = [item for item in mode if item[1] >= xmin and item[1] <= xmax] #Remove all elements with frequencies beyond plot range
-    
-    freq = [modes[i][1] for i in range(len(modes))]
-    labels = [modes[i][0] for i in range(len(modes))]
-
-    for i in range(len(freq)):
-        if 'OP1' not in labels[i] and 'OP2' not in labels[i]:
-            plt.vlines(freq[i], 0, height, color = color_list[plot_counter])
-            plt.text(freq[i]-0.03, height+0.02, labels[i] + '(' + str(round(f0[1] - freq[i], 4)) + ')', rotation = 90, fontsize = 'x-small', color = color_list[plot_counter])
-        
-    return plot_counter + 1
-
-
-def plot_3ion_modes(mode, height, xmin, xmax, plot_counter):
-    """
-#Function to plot the sidebands. Removes all calculated sidebands that are not within the plot range such as to not messy up the final graph.
-    """
-    color_list = ['lightcoral', 'royalblue', 'lime']
-
-    modes = [item for item in mode if item[1] >= xmin and item[1] <= xmax] #Remove all elements with frequencies beyond plot range
-    
-    freq = [modes[i][1] for i in range(len(modes))]
-    labels = [modes[i][0] for i in range(len(modes))]
-
-    for i in range(len(freq)):
-        plt.vlines(freq[i], 0, height, color = color_list[plot_counter])
-        plt.text(freq[i]-0.03, height+0.02, labels[i] + '(' + str(round(f0[1] - freq[i], 4)) + ')', rotation = 90, fontsize = 'x-small', color = color_list[plot_counter])
-    
-    return plot_counter + 1 """
-# %%
