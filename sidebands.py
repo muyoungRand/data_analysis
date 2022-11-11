@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import csv
 from scipy.signal import find_peaks
 
-#%%
 ''' Clean-Up Functions - Do not touch if you don't know what they do '''
 
 def sort_key(mode):
@@ -21,15 +20,21 @@ def duplicate_remover(mode):
     """
     removed_first_order = []
     for i in mode:
-        if len(i[0]) > 7: # Only first order sidebands have short labels
+        if len(i[0]) > 4: # Only first order sidebands have short labels
             removed_first_order.append(i)
 
     sorted_ls = sorted(removed_first_order) # Sorting puts repeated elements next to each other
 
     removed_duplicates = []
-    for i in range(0, len(sorted_ls), 2):
+    i = 0
+    while i < len(sorted_ls)-1: 
         if sorted_ls[i][0] == sorted_ls[i+1][0]: # Check that repeated elements are next to each other, then just pick one of them
             removed_duplicates.append(sorted_ls[i])
+            i += 2
+        else:
+            removed_duplicates.append(sorted_ls[i])
+            removed_duplicates.append(sorted_ls[i+1])
+            i += 1
 
     ### NOTE: There may be a caveat here so that we miss some actual modes. Need to double check that this is not the case.
 
@@ -123,7 +128,6 @@ def freq_diff(mode, threshold = 0.010):
                 differences.append([val, mode[i][0], mode[j][0]])
 
     return differences
-#%%
 ''' Frequency Calculations - 3 Ion Mode Frequencies + Higher Order Sidebands'''
 def calc_mode_freq(fax, fr1, fr2):
     '''
@@ -173,12 +177,11 @@ def second_order(f0, trap_freq):
     for i in uncleansb2:
         supp = cleanup_labels(i)
         cleansb2.append(supp)
-
     # Remove first orders and duplicates
     cleansb2.sort()
     sb2_removed = duplicate_remover(cleansb2)
 
-    return sb2_removed 
+    return sb2_removed
 
 def third_order(f0, trap_freq):
     """
@@ -198,7 +201,6 @@ def third_order(f0, trap_freq):
     return sb3
 
 
-#%%
 ''' Data Analysis and Plotting Functions '''
 
 def first_order_modes(mode, height, xmin, xmax):
@@ -239,7 +241,7 @@ def second_order_modes_1ion(mode, height, xmin, xmax):
     for i in range(len(freq)):
         if 'OP1' not in labels[i] and 'OP2' not in labels[i]:
             plt.vlines(freq[i], 0, height, color = 'b')
-            plt.text(freq[i]-0.03, height+0.02, labels[i] + '(' + str(round(f0[1] - freq[i], 4)) + ')', rotation = 90, fontsize = 'x-small', color = 'b')
+            plt.text(freq[i]+0.01, height+0.02, labels[i] + '(' + str(round(f0[1] - freq[i], 4)) + ')', rotation = 90, fontsize = 'x-small', color = 'b')
 
     problems = freq_diff(modes)
     
@@ -292,7 +294,7 @@ second_order_overlaps = second_order_modes_1ion(sb2, 0.4, xmin, xmax)
 #plt.rcParams["figure.figsize"] = (5, 5)
 #plot_counter_3ion = 0
 #plot_counter_3ion = plot_3ion_modes(sb1, 0.8, xmin, xmax, plot_counter_3ion)
-#plot_counter_3ion = plot_3ion_modes(sb2, 0.5, xmin ,xmax, plot_counter_3ion)
+#plot_counter_3ion = plot_3ion_modes(sb2, 0.5, xmin ,xmax, plot_counter1_3ion)
 
 #plot_counter_1ion = 0
 #plot_counter_1ion = plot_1ion_modes(sb1, 1.0, xmin, xmax, plot_counter_1ion)
@@ -321,7 +323,7 @@ plt.show()
 
 def plot_3ion_modes(mode, height, xmin, xmax, plot_counter):
     """
-    #Function to plot the sidebands. Removes all calculated sidebands that are not within the plot range such as to not messy up the final graph.
+#Function to plot the sidebands. Removes all calculated sidebands that are not within the plot range such as to not messy up the final graph.
     """
     color_list = ['lightcoral', 'royalblue', 'lime']
 
