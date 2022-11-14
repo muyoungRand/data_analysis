@@ -141,7 +141,7 @@ def freq_diff_modes(mode1, mode2, xmin, xmax, threshold = 0.010, plot = True):
         for j in range(len(mode2)):
             val = mode1[i][1] - mode2[j][1]
 
-            if np.absolute(val) <= 0.010 and mode1[i][0] != mode2[j][0]:
+            if np.absolute(val) <= 0.050 and mode1[i][0] != mode2[j][0]:
                 differences.append([val, mode1[i][0], mode2[j][0]])
         
         i += 1
@@ -240,7 +240,7 @@ def first_order_modes(mode, height, xmin, xmax, plot = False):
     freq = [modes[i][1] for i in range(len(modes))]
     labels = [modes[i][0] for i in range(len(modes))]
 
-    problems = freq_diff(modes)
+    problems = freq_diff(modes, threshold = 0.070)
 
     if plot == True:
         for i in range(len(freq)):
@@ -272,11 +272,6 @@ def second_order_modes_1ion(mode, height, xmin, xmax, plot = False):
                 plt.vlines(freq[i], 0, height, color = 'b')
                 plt.text(freq[i]+0.01, height+0.02, labels[i] + '(' + str(round(f0[1] - freq[i], 4)) + ')', rotation = 90, fontsize = 'x-small', color = 'b')
 
-        print("Second Order Overlapping Peaks:")
-        for i in problems:
-            if i[1] != i[2]:
-                print('\tMode 1:', i[1], ", Mode 2:", i[2], ", Separtion =", np.round(i[0]*10**(3),1), 'kHz\n')
-
     return problems
 #%%
 plot = True
@@ -292,10 +287,10 @@ xmax = 113.3
 #    if xmin < freq[i] < xmax:
 #        plt.text(freq[i] + 0.01, chn5[i]-0.1, str(round(f0[1] - freq[i], 4)), rotation = 90, fontsize = 'x-small')
 
-f0 = ['', 113.20]
-ax = 0.462
-r1 = 1.55
-r2 = 2.01
+f0 = ['', 113.196]
+ax = 0.440
+r1 = 0.963265306122449
+r2 = 1.3696969696969696
 
 if plot == True:
     plt.figure(dpi = 200)
@@ -304,10 +299,7 @@ if plot == True:
     plt.xlabel('Frequency (MHz)')
     plt.ylabel("P(excited)")
 
-valid_modes = []
-
-
-guess_mode_freq = calc_mode_freq(0.462, r1, r2)
+guess_mode_freq = calc_mode_freq(ax, r1, r2)
 
 uncleansb1 = first_order(f0, guess_mode_freq)
 sb1 = []
@@ -316,12 +308,6 @@ for i in uncleansb1:
     sb1.append(sup)
 
 sb2 = second_order(f0, guess_mode_freq)
-
-""" uncleansb3 = third_order(f0, guess_mode_freq)
-sb3 = []
-for i in uncleansb3:
-    supp = cleanup_labels(i)
-    sb3.append(supp) """
 
 first_order_overlaps = first_order_modes(sb1, 0.8, xmin, xmax, plot)
 second_order_overlaps = second_order_modes_1ion(sb2, 0.4, xmin, xmax, plot)
@@ -356,10 +342,9 @@ xmax = 113.3
 #        plt.text(freq[i] + 0.01, chn5[i]-0.1, str(round(f0[1] - freq[i], 4)), rotation = 90, fontsize = 'x-small')
 
 f0 = ['', 113.20]
-ax = 0.462
-r1 = [1.11 - 0.01 * i for i in range(-50, 50)]
-r2 = [1.57 - 0.01 * i for i in range(-50, 50)]
-
+ax = 0.440
+r1 = np.linspace(0.8, 1.12, 50)
+r2 = np.linspace(0.8, 2.0, 100)
 
 if plot == True:
     plt.figure(dpi = 200)
@@ -370,31 +355,39 @@ if plot == True:
 
 valid_modes = []
 
-for k in range(len(r1)):
-    guess_mode_freq = calc_mode_freq(0.462, r1[k], r2[k])
+for r in r1:
+    for rr in r2:
+        guess_mode_freq = calc_mode_freq(ax, r, rr)
 
-    uncleansb1 = first_order(f0, guess_mode_freq)
-    sb1 = []
-    for i in uncleansb1:
-        sup = cleanup_labels(i)
-        sb1.append(sup)
+        uncleansb1 = first_order(f0, guess_mode_freq)
+        sb1 = []
+        for i in uncleansb1:
+            sup = cleanup_labels(i)
+            sb1.append(sup)
 
-    sb2 = second_order(f0, guess_mode_freq)
+        sb2 = second_order(f0, guess_mode_freq)
 
-    """ uncleansb3 = third_order(f0, guess_mode_freq)
-    sb3 = []
-    for i in uncleansb3:
-        supp = cleanup_labels(i)
-        sb3.append(supp) """
+        first_order_overlaps = first_order_modes(sb1, 0.8, xmin, xmax, plot)
+        #second_order_overlaps = second_order_modes_1ion(sb2, 0.4, xmin, xmax, plot)
+        first_second_order_overlaps = freq_diff_modes(sb1, sb2, xmin, xmax, plot = False)
 
-    first_order_overlaps = first_order_modes(sb1, 0.8, xmin, xmax, plot)
-    second_order_overlaps = second_order_modes_1ion(sb2, 0.4, xmin, xmax, plot)
-    first_second_order_overlaps = freq_diff_modes(sb1, sb2, xmin, xmax)
+        if len(first_order_overlaps) == 0:
+            if 1.39 > (r + rr)/2 > 1.0:
+                if len(first_second_order_overlaps) < 15:
+                    valid_modes.append([r, rr, first_second_order_overlaps])
 
-    if len(first_order_overlaps) == 0 and len(first_second_order_overlaps) < 3 and len(second_order_overlaps) < 10:
-        valid_modes.append([r1[k], r2[k]])
+for hi in valid_modes:
+    print(hi[0], hi[1])
+check = []
 
-print("Possible Modes:", valid_modes)
+for hi in valid_modes:
+    counter = 0
+    for bye in range(len(hi[2])):
+        if "2Ax" in hi[2][bye][1] or "2Ax" in hi[2][bye][2]:
+            counter +=1
 
+    if counter == 0:
+        check.append(hi)
 
+print(check)
 # %%
