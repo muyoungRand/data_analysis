@@ -449,12 +449,45 @@ for k in range(len(r1)):
 # Sort valid modes wrt total points
 sorted_valid_modes = sorted(valid_modes, key = itemgetter(2))
 # %%
+''' Read Data '''
+import ast
+
+# read file format after July 15
+def read_file(filename):
+    with open(filename, 'rt') as file:
+        d = []
+        h = []
+        r = []
+        t = []
+        for row in csv.reader(file):
+            data  = []
+            extra = []
+            for item in row:
+                try:
+                    data.append(float(item))
+                except:
+                    extra.append(ast.literal_eval(item))
+            d.append(data)
+            t.append(extra[0])
+            h.append(extra[1])
+            r.append(extra[2])
+
+    return np.transpose(d), h, r, t
+
+fname = "/mnt/dzmitrylab/experiment/2022/11/16/north/3ion/freqscan globalraman 3ions EIT1500us 200us 1kHz RepLock-8dBm NoLock50dBAtten 111p5_113p4 2p90Vpp_17p7486MHz_5p75VSqz"
+data, extra1, extra2, extra3 = read_file(fname)
+
+x = data[0]
+y1 = data[1]
+y5 = data[32]
+y7 = data[34]
+y9 = data[36]
+#%%
 plot = True
 
-xmin = 113
-xmax = 115.5
+xmin = 111.5
+xmax = 113.4
 
-#plt.plot(freq, chn5, 'black')
 #plt.plot(freq[peaks], chn7[peaks], 'rx')
 
 #for i in peaks:
@@ -465,9 +498,12 @@ f0 = ['', 113.20]
 ax = 0.440
 
 check = []
-for i in sorted_valid_modes:
+""" for i in sorted_valid_modes:
     if i[2] < 40:
-        check.append(i)
+        check.append(i) """
+
+check = []
+check.append([0.942, 1.616])
 
 for i in check:
     r1 = i[0]
@@ -481,6 +517,8 @@ for i in check:
         plt.ylabel("P(excited)")
         plt.title("R1:" + str(np.round(r1,3)) + "\nR2:" + str(np.round(r2,3)), loc = 'left')
 
+        plt.plot(x, y7, 'black')
+        
     guess_mode_freq = calc_mode_freq(ax, r1, r2)
 
     uncleansb1 = first_order(f0, guess_mode_freq)
@@ -494,19 +532,10 @@ for i in check:
     print("Ax:", np.round(ax, 3), "R1:", np.round(r1, 3), "R2:", np.round(r2, 3))
     print("----------------------------")
     first_order_overlaps = first_order_modes(sb1, 0.8, xmin, xmax, plot)
-    second_order_overlaps = second_order_modes_1ion(sb2, 0.4, xmin, xmax, plot)
+    second_order_overlaps = second_order_modes_1ion(sb2, 0.4, xmin, xmax, plot = False)
     first_second_order_overlaps = freq_diff_modes(sb1, sb2, xmin, xmax, text = True)
 
     plt.show()
-
-#plt.rcParams["figure.figsize"] = (5, 5)
-#plot_counter_3ion = 0
-#plot_counter_3ion = plot_3ion_modes(sb1, 0.8, xmin, xmax, plot_counter_3ion)
-#plot_counter_3ion = plot_3ion_modes(sb2, 0.5, xmin ,xmax, plot_counter1_3ion)
-
-#plot_counter_1ion = 0
-#plot_counter_1ion = plot_1ion_modes(sb1, 1.0, xmin, xmax, plot_counter_1ion)
-#plot_counter_1ion = plot_1ion_modes(sb2, 0.6, xmin, xmax, plot_counter_1ion)
 
 #plt.show() 
 
