@@ -474,7 +474,7 @@ def read_file(filename):
 
     return np.transpose(d), h, r, t
 
-fname = "/mnt/dzmitrylab/experiment/2022/11/16/north/3ion/freqscan globalraman 3ions EIT1500us 200us 1kHz RepLock-8dBm NoLock50dBAtten 111p5_113p4 2p90Vpp_17p7486MHz_5p75VSqz"
+fname = "/mnt/dzmitrylab/experiment/2022/11/18/north/freqscan globalraman EIT1500us 150us 1kHz RepLock-8dBm NoLock50dBAtten 111p5_114p7 -6p8_Sqz 2p94Vpp"
 data, extra1, extra2, extra3 = read_file(fname)
 
 x = data[0]
@@ -495,7 +495,7 @@ xmax = 113.4
 #        plt.text(freq[i] + 0.01, chn5[i]-0.1, str(round(f0[1] - freq[i], 4)), rotation = 90, fontsize = 'x-small')
 
 f0 = ['', 113.20]
-ax = 0.440
+ax = 0.4406
 
 check = []
 """ for i in sorted_valid_modes:
@@ -503,7 +503,7 @@ check = []
         check.append(i) """
 
 check = []
-check.append([0.942, 1.616])
+check.append([0.9420, 1.6176])
 
 for i in check:
     r1 = i[0]
@@ -517,7 +517,7 @@ for i in check:
         plt.ylabel("P(excited)")
         plt.title("R1:" + str(np.round(r1,3)) + "\nR2:" + str(np.round(r2,3)), loc = 'left')
 
-        plt.plot(x, y7, 'black')
+        plt.plot(x, y1, 'black')
         
     guess_mode_freq = calc_mode_freq(ax, r1, r2)
 
