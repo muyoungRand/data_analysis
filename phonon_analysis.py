@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from basic_functions import read_file
 
-directory = '/home/randkim/github/data_analysis/'
+directory = '/mnt/dzmitrylab/experiment/2022/12/07/'
 # %%
 '''
 Method 1 - RSB/BSB ratio method
@@ -55,12 +55,12 @@ def ratio_method(rsb_filename, bsb_filname):
     plt.show()
     print("Ratio Method: nbar =", np.round(nbar, 2))
 
-rsb_filename = 'delayscan R2BSB globalraman afterDop RepLock-8dBm NoLock33dBAtten.txt'
-bsb_filename = 'delayscan R2RSB globalraman afterDop RepLock-8dBm NoLock33dBAtten.txt'
+rsb_filename = 'delayscan R2RSB afterDop RepLock-8dBm NoLock33dBAtten.txt'
+bsb_filename = 'delayscan R2BSB afterDop RepLock-8dBm NoLock33dBAtten.txt'
 ratio_method(rsb_filename, bsb_filename)
 
-rsb_filename = 'delayscan R2RSB globalraman EIT1500us RepLock-8dBm NoLock33dBAtten.txt'
-bsb_filename = 'delayscan R2BSB globalraman EIT1500us RepLock-8dBm NoLock33dBAtten.txt'
+rsb_filename = 'delayscan R2RSB EIT1500us RepLock-8dBm NoLock33dBAtten.txt'
+bsb_filename = 'delayscan R2BSB EIT1500us RepLock-8dBm NoLock33dBAtten.txt'
 ratio_method(rsb_filename, bsb_filename)
 
 # %%
