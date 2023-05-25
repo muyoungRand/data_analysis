@@ -9,7 +9,7 @@ for i in range(len(x)):
 
 plt.plot(x, y)
 # %%
-chi = -np.log(y)
+chi = -np.log(-(2*y - 1))
 plt.plot(x, chi)
 #%%
 chiF = np.fft.rfft(chi)
