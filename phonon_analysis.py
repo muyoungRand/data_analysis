@@ -5,7 +5,7 @@ import glob
 import numpy as np
 
 # %%
-path = "/home/randkim/data_analysis/*"
+path = "/home/dzmitry/KMY_github/data_analysis/*"
 final_files = []
 for file in glob.glob(path, recursive=True):
     if '1000us' in file:
@@ -22,7 +22,7 @@ for i in range(len(final_files)):
     file = final_files[i]
 
     x, y = basic_functions.read_file(file)
-    pop_guess = [0.1, 0.22, 0.25, 0.2, 0.1, 0.01]
+    pop_guess = [0.1, 0.22, 0.25, 0.2, 0.1, 0.01, 0.01, 0.03, 0.03, 0.03, 0.01, 0.01, 0.02, 0.02, 0.01]
     Omega_0 = 1 / (2 * np.pi * 10)
     gamma = 1E-5
 
@@ -33,9 +33,7 @@ for i in range(len(final_files)):
         print("Sum of Fock State Population exceeds 1. Force highest Fock State to 0 population")
         fit_res[max_n_fit - 1] = 0    
     
-    res.append([fit_res[:max_n_fit], variable[i]])
-
-"""     plt.figure()
+    plt.figure()
     plt.plot(x, y, 'x-', label = 'Data')
     plt.plot(x, basic_functions.rsb_multi_sin_fit(x, fit_res), label = "Multi Sine Fit")
     plt.title(variable[i])
@@ -46,11 +44,12 @@ for i in range(len(final_files)):
     plt.bar([i for i in range(len(pop_guess))], fit_res[:len(pop_guess)], 0.4, label = "Multi Sine Fit")
     plt.title(variable[i])
     plt.legend()
- """
+
+    res.append([fit_res[:max_n_fit], variable[i]])
 
 # %%
 fig = plt.figure(figsize=(15, 15))
-fig.suptitle("Ax RSB Shape Trap 1000us 1000Amp", fontsize = 30)
+fig.suptitle("R2 RSB Shape Trap 1000us 1000Amp", fontsize = 30)
 
 ax = fig.add_subplot(111, projection='3d')
 
