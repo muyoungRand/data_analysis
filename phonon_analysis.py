@@ -1,66 +1,72 @@
 #%%
-import os
-
-import numpy as np
+import basic_functions
 import matplotlib.pyplot as plt
+import glob
+import numpy as np
 
-from basic_functions import read_file
-
-directory = '/mnt/dzmitrylab/experiment/2022/12/07/'
 # %%
-'''
-Method 1 - RSB/BSB ratio method
-'''
+path = "/home/randkim/data_analysis/*"
+final_files = []
+for file in glob.glob(path, recursive=True):
+    if '1000us' in file:
+        final_files.append(file)
 
-def ratio_method(rsb_filename, bsb_filname):
-    rsb_variable, rsb_data = read_file(directory + rsb_filename)
-    bsb_variable, bsb_data = read_file(directory + bsb_filename)
+sorted(final_files) 
 
-    ratio = [] # Store ratio values
-    zero_data_points = [] # Store indices where BSB data is 0, and thus gives division errors
+variable = [int(final_files[i][-6:-2]) for i in range(len(final_files))]
 
-    for i in range(len(rsb_data)):
-        if bsb_data[i] != 0:
-            ratio.append(rsb_data[i]/bsb_data[i])
-        else:
-            zero_data_points.append(i)
+res = []
 
-    r = np.average(ratio) 
-    nbar = np.absolute(r / (1 - r)) # Cheating here; the absolute shouldn't be there
+#%%
+for i in range(len(final_files)):
+    file = final_files[i]
 
-    if len(zero_data_points) != 0:
-        variable = rsb_variable[np.arange(len(rsb_variable)) != zero_data_points[:]] # Remove bad division
-    else:
-        variable = rsb_variable
+    x, y = basic_functions.read_file(file)
+    pop_guess = [0.1, 0.22, 0.25, 0.2, 0.1, 0.01]
+    Omega_0 = 1 / (2 * np.pi * 10)
+    gamma = 1E-5
 
-    fig, axs = plt.subplots(2, figsize = (8, 6))
-    fig.tight_layout(pad = 5.0)
-    if 'EIT' in rsb_filename:
-        fig.suptitle("Ratio Method - nBar after EIT")
-    elif 'Dop' in rsb_filename:
-        fig.suptitle("Ratio Method - nBar after Doppler")
+    fit_res = basic_functions.try_rsb_sine_fit(x , y, pop_guess, Omega_0, gamma)
 
-    axs[0].plot(rsb_variable, rsb_data, label = 'RSB')
-    axs[0].plot(bsb_variable, bsb_data, label = 'BSB')
-    axs[0].set_title("Delay Scan Data")
-    axs[0].set_xlabel("Delay (us)")
-    axs[0].set_ylabel("P(excited)")
-    axs[0].legend(shadow=True, fancybox=True)
+    max_n_fit = len(pop_guess)
+    if np.sum(fit_res[:max_n_fit]) > 1.0:
+        print("Sum of Fock State Population exceeds 1. Force highest Fock State to 0 population")
+        fit_res[max_n_fit - 1] = 0    
+    
+    res.append([fit_res[:max_n_fit], variable[i]])
 
-    axs[1].plot(variable, ratio)
-    axs[1].set_title("Calculated RSB/BSB Ratio")
-    axs[1].set_xlabel("Delay (us)")
-    axs[1].set_ylabel("RSB/BSB")
-
+"""     plt.figure()
+    plt.plot(x, y, 'x-', label = 'Data')
+    plt.plot(x, basic_functions.rsb_multi_sin_fit(x, fit_res), label = "Multi Sine Fit")
+    plt.title(variable[i])
+    plt.legend()
     plt.show()
-    print("Ratio Method: nbar =", np.round(nbar, 2))
 
-rsb_filename = 'delayscan R2RSB afterDop RepLock-8dBm NoLock33dBAtten.txt'
-bsb_filename = 'delayscan R2BSB afterDop RepLock-8dBm NoLock33dBAtten.txt'
-ratio_method(rsb_filename, bsb_filename)
+    plt.figure()
+    plt.bar([i for i in range(len(pop_guess))], fit_res[:len(pop_guess)], 0.4, label = "Multi Sine Fit")
+    plt.title(variable[i])
+    plt.legend()
+ """
 
-rsb_filename = 'delayscan R2RSB EIT1500us RepLock-8dBm NoLock33dBAtten.txt'
-bsb_filename = 'delayscan R2BSB EIT1500us RepLock-8dBm NoLock33dBAtten.txt'
-ratio_method(rsb_filename, bsb_filename)
+# %%
+fig = plt.figure(figsize=(15, 15))
+fig.suptitle("Ax RSB Shape Trap 1000us 1000Amp", fontsize = 30)
 
+ax = fig.add_subplot(111, projection='3d')
+
+for data in range(len(res)):
+    ys = res[data][0]
+
+    ax.bar([0, 1, 2, 3, 4, 5], ys, zs= res[data][1], zdir='y', alpha=0.8)
+
+ax.set_xlabel('Fock State', fontsize = 15)
+ax.set_ylabel('Ring Down Duration', fontsize = 15)
+ax.set_zlabel('Population', fontsize = 15)
+
+ax.xaxis.set_tick_params(labelsize='large')
+ax.yaxis.set_tick_params(labelsize='large')
+ax.zaxis.set_tick_params(labelsize='large')
+
+plt.tight_layout()
+plt.show()
 # %%
