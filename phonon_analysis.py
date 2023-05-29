@@ -49,7 +49,7 @@ for i in range(len(final_files)):
 
 # %%
 fig = plt.figure(figsize=(15, 15))
-fig.suptitle("R2 RSB Shape Trap 1000us 1000Amp", fontsize = 30)
+fig.suptitle("R2 RSB Shake Trap 1000us 1000Amp", fontsize = 30)
 
 ax = fig.add_subplot(111, projection='3d')
 
