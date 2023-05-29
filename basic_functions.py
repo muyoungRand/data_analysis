@@ -99,6 +99,6 @@ def try_rsb_sine_fit(x, y, pop_guess, Omega_0, gamma, lower_bound = None, upper_
 
     return popt
 
-    
+# BSB = Omega = Omega_0 * np.sqrt(np.linspace(1, max_n_fit - 1, max_n_fit))
 
 # %%
