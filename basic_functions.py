@@ -2,8 +2,14 @@
 import numpy as np
 from scipy.optimize import curve_fit
 
-def sinsquare_func(t, a, b, TPi, phase):
-    return a + b * np.sin((np.pi * t / (2 * TPi)) + phase)**2
+def sinsquare_func(t, a, b, Tpi, phase):
+    return a + b * np.sin((np.pi * t / (2 * Tpi)) + phase)**2
+
+def sinsquare_decay_func(t, a, b, d, Tpi, phase):
+    return a + b * np.exp(-d * t) * np.sin((np.pi * t / (2 * Tpi)) + phase)**2
+
+def sinsquare_decay_inverted_func(t, a, b, d, Tpi, phase):
+    return 1 - (a + b * np.exp(-d * t) * np.sin((np.pi * t / (2 * Tpi)) + phase)**2)
 
 def rsb_multi_sin_fit(t, p, rsb = True):
     res = np.zeros_like(t) # Store calculated excited state population

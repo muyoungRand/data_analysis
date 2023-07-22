@@ -99,24 +99,30 @@ def get_x_y(filename, channels = [5, 7, 9]):
 
     raw = process_raw(raw)
     nexp = get_nexp(raw)
-
+    
     x = data[0]  # x axis,
 
     # Extract threshold data
     y1 = data[3]  # SCPMT Counter 1
     
     y2_rev = []
-    for i in channels:
-        y2_rev.append(data[i + 27]) # MCPMT CH7 = Data 34
+    if len(channels) > 1:
+        for i in channels:
+            y2_rev.append(data[i + 27]) # MCPMT CH7 = Data 34
+    else:
+        y2_rev.append(0)
 
     # Calculate Errors
     nexp = nexp[0]
     err1 = sqrt(y1 * (1.0 - y1) / nexp)
 
     err2_rev = []
-    for i in y2_rev:
-        errr = sqrt(i * (1.0 - i) / nexp)
-        err2_rev.append(errr)
+    if len(channels) > 1:
+        for i in y2_rev:
+            errr = sqrt(i * (1.0 - i) / nexp)
+            err2_rev.append(errr)
+    else:
+        err2_rev.append(0)
    
     # Flip order.
     # MainWin saves STOP point as first data point, so flip to make START the first data point
@@ -126,10 +132,14 @@ def get_x_y(filename, channels = [5, 7, 9]):
     
     y2 = []
     err2 = []
-    for i in y2_rev:
-        y2.append(i[::-1])
-    for j in err2_rev:
-        err2.append(j[::-1])
+    if len(channels) > 1:
+        for i in y2_rev:
+            y2.append(i[::-1])
+        for j in err2_rev:
+            err2.append(j[::-1])
+    else:
+        y2.append(0)
+        err2.append(0)
 
     return (x, y1, err1, y2, err2)
 
