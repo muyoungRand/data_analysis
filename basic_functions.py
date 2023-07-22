@@ -5,7 +5,7 @@ from scipy.optimize import curve_fit
 def sinsquare_func(t, a, b, TPi, phase):
     return a + b * np.sin((np.pi * t / (2 * TPi)) + phase)**2
 
-def rsb_multi_sin_fit(t, p):
+def rsb_multi_sin_fit(t, p, rsb = True):
     res = np.zeros_like(t) # Store calculated excited state population
     max_n_fit = int(np.size(p) - 2) # Highest Fock state considered
 
@@ -15,7 +15,10 @@ def rsb_multi_sin_fit(t, p):
     Omega_0 = p[max_n_fit] # Carrier Rabi Frequencyu
     gamma = p[max_n_fit + 1] # Decoherence Rate
 
-    Omega = Omega_0 * np.sqrt(np.linspace(0, max_n_fit-1, max_n_fit)) # RSB Rabi Frequencies for Fock states
+    if rsb == True:
+        Omega = Omega_0 * np.sqrt(np.linspace(0, max_n_fit-1, max_n_fit)) # RSB Rabi Frequencies for Fock states
+    else:
+        Omega = Omega_0 * np.sqrt(np.linspace(1, max_n_fit - 1, max_n_fit))
 
     for i in range(max_n_fit):
         res = res + a[i] * np.cos(Omega[i] * t) * np.exp(-gamma * (i + 2)**(0.7) * t) # Calculate excited state population
@@ -24,7 +27,7 @@ def rsb_multi_sin_fit(t, p):
 
     return res
 
-def try_rsb_sine_fit(x, y, pop_guess, Omega_0, gamma, lower_bound = None, upper_bound = None):
+def try_rsb_sine_fit(x, y, pop_guess, Omega_0, gamma, rsb = True, lower_bound = None, upper_bound = None):
     max_n_fit = len(pop_guess)
 
     if lower_bound == None:
@@ -38,7 +41,7 @@ def try_rsb_sine_fit(x, y, pop_guess, Omega_0, gamma, lower_bound = None, upper_
         upper_bound.append(0.001)
 
     p = pop_guess + [Omega_0, gamma]
-    func_fit = lambda x, *p: rsb_multi_sin_fit(x, p)
+    func_fit = lambda x, *p: rsb_multi_sin_fit(x, p, rsb)
     popt, pcov = curve_fit(func_fit, x, y, p0 = p, bounds = (lower_bound, upper_bound))
 
     return popt
