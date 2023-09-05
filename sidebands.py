@@ -474,7 +474,7 @@ def read_file(filename):
 
     return np.transpose(d), h, r, t
 
-fname = "/mnt/dzmitrylab/experiment/2023/02/14/north/freqscan globalraman afterDop 100us 1kHz NoLock20Amp 111_115"
+fname = "freqscan globalraman 50us EIT1500us RepLock-8dBm NoLockDDS1003 -0p3VSqz.txt"
 data, extra1, extra2, extra3 = read_file(fname)
 
 x = data[0]
@@ -485,7 +485,7 @@ y9 = data[36]
 #%%
 plot = True
 
-xmin = 111.1
+xmin = 111.4
 xmax = 113.2
 
 #plt.plot(freq[peaks], chn7[peaks], 'rx')
@@ -495,7 +495,7 @@ xmax = 113.2
 #        plt.text(freq[i] + 0.01, chn5[i]-0.1, str(round(f0[1] - freq[i], 4)), rotation = 90, fontsize = 'x-small')
 
 f0 = ['', 112.944652]
-ax = 0.438
+ax = 0.2668
 
 check = []
 """ for i in sorted_valid_modes:
@@ -503,14 +503,14 @@ check = []
         check.append(i) """
 
 check = []
-check.append([1.145, 1.755])
+check.append([0.810, 0.911])
 
 for i in check:
     r1 = i[0]
     r2 = i[1]
 
     if plot == True:
-        plt.figure(dpi = 150)
+        plt.figure(figsize = (15,5),dpi = 150)
         plt.xlim(xmin, xmax)
         plt.axvline(x = f0[1])
         plt.xlabel('Frequency (MHz)')
@@ -533,7 +533,7 @@ for i in check:
     print("----------------------------")
     first_order_overlaps = first_order_modes(sb1, 0.8, xmin, xmax, plot)
     second_order_overlaps = second_order_modes_1ion(sb2, 0.4, xmin, xmax, plot = True)
-    first_second_order_overlaps = freq_diff_modes(sb1, sb2, xmin, xmax, text = True)
+    #first_second_order_overlaps = freq_diff_modes(sb1, sb2, xmin, xmax, text = True)
 
     plt.show()
 
