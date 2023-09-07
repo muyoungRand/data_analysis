@@ -14,7 +14,7 @@ def rabi_freq(nStart, nDelta, LD_param):
         LD_param (float): Lamb-Dicke Parameter
 
     Returns:
-        float: Rabi frequency
+        float: Rabi frequency normalised to carrier Rabi frequency value
     """
     nEnd = nStart + nDelta
 
