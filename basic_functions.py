@@ -101,12 +101,40 @@ def multi_sin_largeLD_fit(x, y, y_err, pop_guess, variables, lower_bound = None,
         upper_bound.append(1.0)
         upper_bound.append(1.0)
 
-    p = pop_guess + variables
+    p = list(pop_guess) + list(variables)
     func_fit = lambda x, *p: multi_sin_largeLD_func(x, p)
     popt, pcov = curve_fit(func_fit, x, y, p0 = p, sigma = y_err, absolute_sigma= True, bounds = (lower_bound, upper_bound))
 
     if np.sum(popt[:max_n_fit]) > 1.0:
         print("Sum of Fock State Population exceeds 1. Force highest Fock State to 0 population")
         popt[max_n_fit - 1] = 0
+
+    return popt, pcov
+
+def try_fit(x, y, y_err, max_n_fit, variables):
+    Omega_0, LD_param, gamma, amp, offset = variables
+
+    random_pop_guess = np.random.rand(max_n_fit)
+    random_pop_guess = random_pop_guess/sum(random_pop_guess)
+
+    popt, pcov = multi_sin_largeLD_fit(x, y, y_err, random_pop_guess, variables)
+
+    new_pop_guess = popt[:11]
+
+    lower_bound = [0 for i in range(max_n_fit)]
+    lower_bound.append(Omega_0 * 0.9)
+    lower_bound.append(LD_param * 0.95)
+    lower_bound.append(0.0)
+    lower_bound.append(0.0)
+    lower_bound.append(0.0)
+
+    upper_bound = [1 for i in range(max_n_fit)]
+    upper_bound.append(Omega_0 * 1.1)
+    upper_bound.append(LD_param * 1.05)
+    upper_bound.append(1.0)
+    upper_bound.append(1.0)
+    upper_bound.append(1.0)
+
+    popt, pcov = multi_sin_largeLD_fit(x, y, y_err, new_pop_guess, variables, lower_bound, upper_bound)
 
     return popt, pcov
