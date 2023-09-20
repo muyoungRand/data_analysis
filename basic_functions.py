@@ -106,7 +106,7 @@ def multi_sin_largeLD_fit(x, y, y_err, pop_guess, variables, lower_bound = None,
     popt, pcov = curve_fit(func_fit, x, y, p0 = p, sigma = y_err, absolute_sigma= True, bounds = (lower_bound, upper_bound))
 
     if np.sum(popt[:max_n_fit]) > 1.0:
-        print("Sum of Fock State Population exceeds 1. Force highest Fock State to 0 population")
+        #print("Sum of Fock State Population exceeds 1. Force highest Fock State to 0 population")
         popt[max_n_fit - 1] = 0
 
     return popt, pcov
