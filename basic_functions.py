@@ -90,7 +90,7 @@ def multi_sin_largeLD_fit(x, y, y_err, pop_guess, variables, lower_bound = None,
         lower_bound.append(Omega_0 * 0.9)
         lower_bound.append(LD_param * 0.95)
         lower_bound.append(0.0)
-        lower_bound.append(0.0)
+        lower_bound.append(0.8)
         lower_bound.append(0.0)
 
     if upper_bound == None:
@@ -98,8 +98,8 @@ def multi_sin_largeLD_fit(x, y, y_err, pop_guess, variables, lower_bound = None,
         upper_bound.append(Omega_0 * 1.1)
         upper_bound.append(LD_param * 1.05)
         upper_bound.append(1.0)
-        upper_bound.append(1.0)
-        upper_bound.append(1.0)
+        upper_bound.append(0.98)
+        upper_bound.append(0.1)
 
     p = list(pop_guess) + list(variables)
     func_fit = lambda x, *p: multi_sin_largeLD_func(x, p)
