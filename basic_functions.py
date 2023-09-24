@@ -107,7 +107,7 @@ def multi_sin_largeLD_fit(x, y, y_err, pop_guess, variables, lower_bound = None,
 
     if np.sum(popt[:max_n_fit]) > 1.0:
         #print("Sum of Fock State Population exceeds 1. Force highest Fock State to 0 population")
-        popt[max_n_fit - 1] = 0
+        popt[max_n_fit - 2] = 0
 
     return popt, pcov
 
